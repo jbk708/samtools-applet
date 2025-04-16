@@ -1,0 +1,95 @@
+{
+  "name": "samtools_cram2fastq",
+  "title": "SAMtools BAM/CRAM to FASTQ",
+  "summary": "Convert BAM/CRAM files to FASTQ, extracting reads based on flags",
+  "dxapi": "1.0.0",
+  "version": "1.0.0",
+  "inputSpec": [
+    {
+      "name": "i_input_files",
+      "label": "BAM/CRAM files",
+      "class": "array:file",
+      "patterns": ["*.bam", "*.cram"],
+      "help": "Input BAM or CRAM files to process"
+    },
+    {
+      "name": "i_index_files",
+      "label": "BAM/CRAM Index files",
+      "class": "array:file",
+      "patterns": ["*.bai", "*.crai"],
+      "help": "Index files for the input BAM/CRAM files (must be in same order as input files)",
+      "optional": true
+    },
+    {
+      "name": "i_reference_genome",
+      "label": "Reference Genome",
+      "class": "file",
+      "patterns": ["*.fa", "*.fasta", "*.fa.gz", "*.fasta.gz"],
+      "help": "Reference genome (required for CRAM files)",
+      "optional": true
+    },
+    {
+      "name": "i_samtools_flags",
+      "label": "SAMtools Flags",
+      "class": "string",
+      "optional": true,
+      "default": "-f 4",
+      "help": "SAMtools view flags (e.g., '-f 4' for unmapped, '-F 4' for mapped, '-f 1 -F 12' for properly paired reads)"
+    },
+    {
+      "name": "i_output_prefix",
+      "label": "Output Prefix",
+      "class": "string",
+      "optional": true,
+      "help": "Prefix for output filenames. If not provided, input filename will be used."
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "o_fastq_files",
+      "label": "FASTQ files",
+      "class": "array:file",
+      "patterns": ["*.fq.gz", "*.fastq.gz"],
+      "help": "Compressed FASTQ files containing filtered reads"
+    }
+  ],
+  "runSpec": {
+    "interpreter": "bash",
+    "file": "src/samtools_cram2fastq.sh",
+    "distribution": "Ubuntu",
+    "release": "20.04",
+    "version": "0",
+    "timeoutPolicy": {
+      "main": {
+        "hours": 48
+      }
+    },
+    "instanceType": {
+      "main": "azure:mem2_ssd1_x8"
+    },
+    "execDepends": [
+      {"name": "libhts3"},
+      {"name": "samtools"}
+    ]
+  },
+  "access": {
+    "network": ["*"],
+    "project": "CONTRIBUTE"
+  },
+  "regionalOptions": {
+    "aws:us-east-1": {
+      "systemRequirements": {
+        "main": {
+          "instanceType": "mem2_ssd1_v2_x4"
+        }
+      }
+    },
+    "azure:westus": {
+      "systemRequirements": {
+        "main": {
+          "instanceType": "azure:mem2_ssd1_x8"
+        }
+      }
+    }
+  }
+} 
