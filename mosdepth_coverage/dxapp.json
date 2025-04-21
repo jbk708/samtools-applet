@@ -1,0 +1,103 @@
+{
+  "name": "mosdepth_coverage",
+  "title": "Coverage Analysis",
+  "summary": "Calculate sequencing coverage and depth from BAM/CRAM files using mosdepth",
+  "dxapi": "1.0.0",
+  "version": "1.0.0",
+  "inputSpec": [
+    {
+      "name": "i_input_files",
+      "label": "BAM/CRAM files",
+      "class": "array:file",
+      "patterns": ["*.bam", "*.cram"],
+      "help": "Input BAM or CRAM files to analyze"
+    },
+    {
+      "name": "i_index_files",
+      "label": "BAM/CRAM Index files",
+      "class": "array:file",
+      "patterns": ["*.bai", "*.crai"],
+      "help": "Index files for the input BAM/CRAM files (must be in same order as input files)",
+      "optional": true
+    },
+    {
+      "name": "i_reference_genome",
+      "label": "Reference Genome",
+      "class": "file",
+      "patterns": ["*.fa", "*.fasta", "*.fa.gz", "*.fasta.gz"],
+      "help": "Reference genome (required for CRAM files)",
+      "optional": true
+    },
+    {
+      "name": "i_min_base_quality",
+      "label": "Minimum Base Quality",
+      "class": "int",
+      "optional": true,
+      "default": 0,
+      "help": "Minimum base quality to consider for coverage calculation"
+    },
+    {
+      "name": "i_min_mapping_quality",
+      "label": "Minimum Mapping Quality",
+      "class": "int",
+      "optional": true,
+      "default": 0,
+      "help": "Minimum mapping quality to consider for coverage calculation"
+    },
+    {
+      "name": "i_output_prefix",
+      "label": "Output Prefix",
+      "class": "string",
+      "optional": true,
+      "help": "Prefix for output filenames. If not provided, input filename will be used."
+    }
+  ],
+  "outputSpec": [
+    {
+      "name": "o_coverage_files",
+      "label": "Coverage Files",
+      "class": "array:file",
+      "patterns": ["*.mosdepth.summary.txt"],
+      "help": "Text files containing coverage statistics"
+    },
+    {
+      "name": "o_depth_files",
+      "label": "Depth Files",
+      "class": "array:file",
+      "patterns": ["*.per-base.bed.gz"],
+      "help": "Compressed BED files containing per-base depth information"
+    }
+  ],
+  "runSpec": {
+    "interpreter": "bash",
+    "file": "src/mosdepth_coverage.sh",
+    "distribution": "Ubuntu",
+    "release": "20.04",
+    "version": "0",
+    "timeoutPolicy": {
+      "main": {
+        "hours": 4
+      }
+    },
+    "instanceType": {
+      "main": "azure:mem1_ssd1_x8"
+    },
+    "execDepends": [
+      {"name": "docker"}
+    ],
+    "dockerImage": "gfanz/mosdepth"
+  },
+  "access": {
+    "network": ["*"],
+    "project": "CONTRIBUTE"
+  },
+  "regionalOptions": {
+    "azure:westus": {
+      "systemRequirements": {
+        "main": {
+          "instanceType": "azure:mem1_ssd1_x8"
+        }
+      }
+    }
+  }
+} 
