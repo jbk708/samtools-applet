@@ -9,6 +9,10 @@ main() {
     i_samtools_flags="${i_samtools_flags:--f 4}"
     echo "Using samtools flags: ${i_samtools_flags}"
     
+    # Get number of available threads
+    threads=$(nproc)
+    echo "Using ${threads} threads"
+    
     # Create output array
     o_fastq_files=()
     
@@ -46,8 +50,8 @@ main() {
         
         # Extract reads based on flags and convert to FASTQ
         echo "Processing ${base_name}"
-        samtools view $ref_param ${i_samtools_flags} -u input.file | \
-            samtools fastq -@ $(nproc) - | \
+        samtools view $ref_param ${i_samtools_flags} -@ ${threads} -u input.file | \
+            samtools fastq -@ ${threads} - | \
             gzip > "${base_name}.fq.gz"
         
         # Upload result
